@@ -1,0 +1,16 @@
+const express = require("express");
+
+const app = express();
+const PORT = 3000;
+
+app.get("/", (req, res) => {
+    res.send("Hello, World!");
+});
+
+app.get("/about", (req, res) => {
+    res.send("This is a basic Node.js application.");
+});
+
+app.listen(PORT, () => {
+    console.log(`Server is running at http://localhost:${PORT}`);
+});
