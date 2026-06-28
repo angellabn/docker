@@ -19,7 +19,7 @@ app.get("/getUsers", async (req, res) => {
     const db = client.db("usern-db");
     const data = await db.collection("users").find({}).toArray();
 
-    client.close();
+    // client.close();
     res.send(data);
   } catch (err) {
     res.status(500).send(err.message);
@@ -41,7 +41,7 @@ app.post("/addUser", async (req, res) => {
     console.log(data);
     console.log("Data inserted in DB");
 
-    client.close();
+    // client.close();
     res.send({message:"User added"});
   } catch(err){
     res.status(500).send(err.message);
