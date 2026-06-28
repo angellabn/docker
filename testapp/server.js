@@ -1,13 +1,14 @@
 const express = require("express");
 const { MongoClient } = require("mongodb");
 
+
 const app = express();
 const PORT = 5050;
 
 app.use(express.json());
 app.use(express.static("public"));
 
-const URL = "mongodb://admin:querty@localhost:27017";
+const URL = "mongodb://admin:querty@localhost:27017/?authSource=admin";
 const client = new MongoClient(URL);
 
 // GET all users
