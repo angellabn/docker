@@ -1,54 +1,76 @@
 const express = require("express");
 const { MongoClient } = require("mongodb");
 
-
 const app = express();
 const PORT = 5050;
 
 app.use(express.json());
 app.use(express.static("public"));
 
+// Change username/password according to your MongoDB
 const URL = "mongodb://admin:querty@localhost:27017/?authSource=admin";
+
 const client = new MongoClient(URL);
 
-// GET all users
+async function connectDB() {
+    try {
+        await client.connect();
+        console.log("✅ MongoDB Connected");
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+connectDB();
+
+// GET Users
 app.get("/getUsers", async (req, res) => {
-  try {
-    await client.connect();
-    console.log("Connected successfully to server");
+    try {
+        const db = client.db("usern-db");
 
-    const db = client.db("usern-db");
-    const data = await db.collection("users").find({}).toArray();
+        const data = await db.collection("users").find({}).toArray();
 
-    // client.close();
-    res.send(data);
-  } catch (err) {
-    res.status(500).send(err.message);
-  }
+        res.json(data);
+
+    } catch (err) {
+        console.log(err);
+        res.status(500).send(err.message);
+    }
 });
 
-// POST new user
+// ADD User
 app.post("/addUser", async (req, res) => {
-  try {
-    const userObj = req.body;
-    console.log(req.body);
 
-    await client.connect();
-    console.log("Connected successfully to server");
+    try {
 
-    const db = client.db("usern-db");
-    const data = await db.collection("users").insertOne(userObj);
+        const userObj = req.body;
 
-    console.log(data);
-    console.log("Data inserted in DB");
+        console.log("Received:", userObj);
 
-    // client.close();
-    res.send({message:"User added"});
-  } catch(err){
-    res.status(500).send(err.message);
-  }
+        const db = client.db("usern-db");
+
+        const result = await db.collection("users").insertOne(userObj);
+
+        console.log(result);
+
+        res.json({
+            success: true,
+            message: "User Added Successfully"
+        });
+
+    } catch (err) {
+
+        console.log(err);
+
+        res.status(500).json({
+            success: false,
+            error: err.message
+        });
+
+    }
+
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+    console.log(`Server running on http://localhost:${PORT}`);
 });

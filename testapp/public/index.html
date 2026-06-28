@@ -1,25 +1,139 @@
 <!DOCTYPE html>
 <html>
+
+<head>
+
+    <title>User App</title>
+
+    <style>
+
+        body{
+            font-family: Arial;
+            width:400px;
+            margin:40px auto;
+        }
+
+        input{
+            width:100%;
+            padding:10px;
+            margin:8px 0;
+        }
+
+        button{
+            padding:10px 20px;
+            margin-right:10px;
+            cursor:pointer;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+            margin-top:20px;
+        }
+
+        th,td{
+            border:1px solid #ccc;
+            padding:8px;
+            text-align:left;
+        }
+
+    </style>
+
+</head>
+
 <body>
+
 <h2>User Form</h2>
-<input id="name" placeholder="Name">
-<input id="age" placeholder="Age">
-<button onclick="save()">Save</button>
-<button onclick="load()">Load Users</button>
-<pre id="out"></pre>
+
+<input type="text" id="name" placeholder="Enter Name">
+
+<input type="number" id="age" placeholder="Enter Age">
+
+<button onclick="save()">Save User</button>
+
+<button onclick="loadUsers()">Load Users</button>
+
+<hr>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Name</th>
+
+<th>Age</th>
+
+</tr>
+
+</thead>
+
+<tbody id="users"></tbody>
+
+</table>
+
 <script>
+
 async function save(){
- await fetch('/addUser',{
- method:'POST',
- headers:{'Content-Type':'application/json'},
- body:JSON.stringify({name:name.value,age:age.value})
- });
- load();
+
+    const response = await fetch("/addUser",{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+
+            name:document.getElementById("name").value,
+
+            age:document.getElementById("age").value
+
+        })
+
+    });
+
+    const result = await response.json();
+
+    alert(result.message);
+
+    document.getElementById("name").value="";
+
+    document.getElementById("age").value="";
+
+    loadUsers();
+
 }
-async function load(){
- const d=await fetch('/getUsers').then(r=>r.json());
- out.textContent=JSON.stringify(d,null,2);
+
+async function loadUsers(){
+
+    const response = await fetch("/getUsers");
+
+    const data = await response.json();
+
+    let html="";
+
+    data.forEach(user=>{
+
+        html += `
+        <tr>
+            <td>${user.name}</td>
+            <td>${user.age}</td>
+        </tr>
+        `;
+
+    });
+
+    document.getElementById("users").innerHTML = html;
+
 }
+
+loadUsers();
+
 </script>
+
 </body>
+
 </html>
